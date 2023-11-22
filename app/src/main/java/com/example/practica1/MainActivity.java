@@ -23,11 +23,11 @@ public class MainActivity extends AppCompatActivity {
 
     EditText input_x, input_y;
 
-    TextView label_result;
-
     Button btn_calculate;
 
-    int numeroAleatorio = 0;
+    int numeroAleatorio;
+
+    int resultado;
 
     Random random = new Random();
 
@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Iniciar componentes
-        label_result = findViewById(R.id.label_result);
         problem_editText = findViewById(R.id.problem_editText);
         input_x = findViewById(R.id.input_x);
         input_y = findViewById(R.id.input_y);
@@ -58,9 +57,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+
+
+        numeroAleatorio = random.nextInt(6);
+
+        //Agregar problema aleatorio
+        problem_editText.setText(problemasArray[numeroAleatorio].getProblema());
+
+        btn_calculate.setOnClickListener(listerner);
+
+        input_x.setText("");
+        input_y.setText("");
+
+    }
+
     View.OnClickListener listerner = (View v) ->{
 
-        if(btn_calculate.getText().equals("Calcular")){
+ /**       if(btn_calculate.getText().equals("Calcular")){
             if(input_x.getText().toString().trim().length()>0 && input_y.getText().toString().trim().length()>0){
 
                 if(problemasArray[numeroAleatorio].isTipo()){
@@ -92,6 +109,35 @@ public class MainActivity extends AppCompatActivity {
                 input_x.setText("");
                 input_y.setText("");
             }
+        }**/
+
+        if(input_x.getText().toString().trim().length()>0 && input_y.getText().toString().trim().length()>0){
+
+
+            if(problemasArray[numeroAleatorio].isTipo()){
+                resultado = calcularMCM(Integer.parseInt(""+input_x.getText()), Integer.parseInt(""+input_y.getText()));
+                //label_result.setText("El minimo comun multiplo es: " + resultadoMCM);
+            }
+            else {
+                resultado = calcularMCD(Integer.parseInt(""+input_x.getText()), Integer.parseInt(""+input_y.getText()));
+                //label_result.setText("El maximo comun divisor es: " + resultadoMCD);
+            }
+
+            /*Intent intent = new Intent(this, ResultActivity.class);
+            intent.putExtra("problem",problemasArray[numeroAleatorio].getProblema());
+            intent.putExtra("resultado", resultado);
+            startActivity(intent);*/
+
+
+            Bundle enviarDatos = new Bundle();
+            enviarDatos.putString("problem",problemasArray[numeroAleatorio].getProblema());
+            enviarDatos.putInt("resultado", resultado);
+
+
+            Intent intent = new Intent(MainActivity.this, MainActivity2.class);
+            intent.putExtras(enviarDatos);
+            startActivity(intent);
+
         }
 
     };
